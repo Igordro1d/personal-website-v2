@@ -1,5 +1,5 @@
 ---
-index: 1
+index: 3
 company: Private Tutoring
 title: Private Tutor
 team: null

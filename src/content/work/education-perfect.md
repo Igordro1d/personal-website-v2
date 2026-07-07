@@ -1,5 +1,5 @@
 ---
-index: 4
+index: 2
 company: Education Perfect
 title: Software Engineering Intern
 team: null
