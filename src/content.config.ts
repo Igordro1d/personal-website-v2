@@ -32,7 +32,7 @@ const work = defineCollection({
 		current: z.boolean(),
 		location: z.string(),
 		locationType: z.enum(["on-site", "hybrid", "remote"]),
-		description: z.string(),
+		description: z.string().optional(),
 		skills: z.array(z.string()),
 	}),
 });
