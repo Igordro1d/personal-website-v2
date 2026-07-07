@@ -1,0 +1,59 @@
+---
+import { getCollection } from 'astro:content';
+
+import NavBar from '../components/NavBar.astro';
+import SiteLink from '../components/SiteLink.astro';
+import Layout from '../layouts/Layout.astro';
+import { EMAIL_ADDRESS, FULL_NAME } from '../lib/consts';
+
+const entries = (await getCollection('work'))
+	.map((entry) => entry.data)
+	.sort((a, b) => b.index - a.index);
+---
+
+<Layout title={`Work | ${FULL_NAME}`}>
+	<div
+		class="flex flex-col items-center justify-start max-w-397 h-full w-full mt-4 md:mt-8 px-2 md:px-4 mx-auto pb-16 lg:[scrollbar-gutter:stable]"
+	>
+		<NavBar />
+		<div class="flex flex-col items-start justify-start gap-4 md:gap-6 mt-4 md:mt-11 w-full h-min">
+			<h1 class="font-serif text-4xl md:text-6xl">Work Experience</h1>
+			<div class="flex flex-col items-start justify-start gap-2 md:gap-3">
+				<p class="md:text-2xl">
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+					incididunt ut labore et dolore magna aliqua.
+				</p>
+				<p class="md:text-2xl">
+					Lorem ipsum dolor?{' '}
+					<SiteLink external href={`mailto:${EMAIL_ADDRESS}`}>Get in touch</SiteLink>.
+				</p>
+			</div>
+		</div>
+		<div
+			class="relative flex flex-col items-start justify-start gap-6 w-full mt-16 md:pl-20 pb-14 md:pb-0"
+		>
+			<div
+				class="hidden md:block absolute left-7 md:left-9 top-0 bottom-0 w-px md:w-0.5 bg-foreground -mb-14"
+			>
+			</div>
+
+			{
+				entries.map(({ company, title, start, end, description }, index) => (
+					<div class="flex flex-col items-start justify-start gap-5 w-full">
+						<div class="flex flex-col items-start justify-start">
+							<div class="flex flex-row items-start justify-start">
+								<div class="hidden md:block absolute left-[20.5px] md:left-[28.5px] w-4 h-4 bg-foreground rounded-full mt-7" />
+								<h2 class="font-serif text-3xl md:text-5xl leading-normal">{company}</h2>
+							</div>
+							<p class="text-lg md:text-2xl leading-normal w-full">
+								{title} ◦ {start} - {end ?? 'Present'}
+							</p>
+						</div>
+						<p class="text-sm md:text-xl leading-normal max-w-145.5">{description}</p>
+						{index !== entries.length - 1 && <hr class="w-full block md:hidden mx-auto" />}
+					</div>
+				))
+			}
+		</div>
+	</div>
+</Layout>

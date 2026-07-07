@@ -1,9 +1,45 @@
 ---
+import AsciiRenderer from '../components/AsciiRenderer.tsx';
+import NavBar from '../components/NavBar.astro';
+import SiteLink from '../components/SiteLink.astro';
+import Socials from '../components/Socials.astro';
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Igor Moreira Castro">
-	<main class="mx-auto max-w-2xl px-6 py-24">
-		<h1 class="text-3xl font-bold">Igor Moreira Castro</h1>
-	</main>
+<Layout>
+	<div
+		class="flex flex-col items-center justify-start max-w-397 h-full w-full md:overflow-y-clip mt-4 md:mt-8 px-2 md:px-4 mx-auto lg:[scrollbar-gutter:stable]"
+	>
+		<NavBar />
+		<img
+			src="/Header.svg"
+			alt="Lorem Ipsum Dolor"
+			class="w-full md:min-h-42.25 mt-3 md:mt-9 dark:invert"
+		/>
+		<div class="flex flex-row items-center justify-start w-full h-full">
+			<div
+				class="flex flex-col items-start justify-start gap-4 md:gap-8 h-full w-full md:w-158.25 md:pt-14"
+			>
+				<div class="hidden md:flex flex-col items-start justify-around gap-2 w-full">
+					<h2 class="font-serif text-4xl md:text-5xl w-full">Software Engineer</h2>
+				</div>
+				<p class="w-full text-lg md:text-2xl mt-2 md:-mt-4">
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit. Check out my{' '}
+					<SiteLink href="/work">experience</SiteLink> lorem ipsum dolor sit amet.
+				</p>
+				<p class="w-full text-lg md:text-2xl">
+					Lorem ipsum dolor sit amet <SiteLink href="/blog">my blog</SiteLink>.
+				</p>
+				<div class="w-full h-full block md:hidden mx-auto my-auto ml-4">
+					<AsciiRenderer client:load resolution={0.4} />
+				</div>
+				<div class="mt-auto mb-6 md:mb-4 flex flex-col items-start justify-end gap-1 w-full">
+					<Socials />
+				</div>
+			</div>
+			<div class="flex-1 h-full hidden md:block">
+				<AsciiRenderer client:load resolution={0.25} />
+			</div>
+		</div>
+	</div>
 </Layout>

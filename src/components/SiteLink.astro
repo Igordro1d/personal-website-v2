@@ -1,0 +1,23 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+interface Props extends HTMLAttributes<'a'> {
+	href: string;
+	external?: boolean;
+}
+
+const { href, external = false, class: className, ...props } = Astro.props;
+
+const BASE_CLASS =
+	'decoration-1 decoration-zinc-300 hover:decoration-foreground underline underline-offset-2 transition-colors ease-in-out duration-200 inline';
+---
+
+<a
+	href={href}
+	rel={external ? 'noopener' : undefined}
+	target={external ? '_blank' : undefined}
+	class:list={[BASE_CLASS, className]}
+	{...props}
+>
+	<slot />
+</a>

@@ -1,0 +1,83 @@
+---
+import { NAVIGATION } from '../lib/consts';
+
+const [home, ...links] = NAVIGATION;
+const pathname = Astro.url.pathname;
+
+function navLinkClass(active: boolean) {
+	return [
+		'text-xl',
+		'md:text-2xl',
+		'text-zinc-500',
+		'dark:text-zinc-300',
+		'transition-colors',
+		'ease-in-out',
+		'duration-200',
+		active ? 'text-black! dark:text-white!' : 'hover:text-black dark:hover:text-white',
+	].join(' ');
+}
+---
+
+<nav class="flex flex-row justify-between items-center w-[98%] max-w-397 z-50">
+	<a href={home!.href} id="nav-logo" class="origin-top-left" aria-label="Go to home">
+		<img src="/Logo.svg" alt="" class="w-6 h-6 md:w-7.5 md:h-7.5 dark:invert z-10" />
+	</a>
+	<ul class="flex flex-row items-center justify-end gap-4 md:gap-8">
+		<li>
+			<p class={navLinkClass(pathname === home!.href)}>
+				<a href={home!.href}>{home!.name}</a>
+			</p>
+		</li>
+		{
+			links.map(({ name, href }) => (
+				<li>
+					<p class={navLinkClass(pathname.startsWith(href))}>
+						<a href={href}>{name}</a>
+					</p>
+				</li>
+			))
+		}
+	</ul>
+</nav>
+
+<script>
+	// Easter egg: hover the logo for 2s and it hinges off the page, then
+	// springs back with a rubber-band animation.
+	const logo = document.getElementById('nav-logo');
+
+	if (logo) {
+		let timeout: ReturnType<typeof setTimeout>;
+
+		const onEnter = () => {
+			clearTimeout(timeout);
+			timeout = setTimeout(() => {
+				logo.classList.remove('animate-rubber-band');
+				logo.classList.add('animate-hinge');
+
+				logo.addEventListener('animationend', function handler(e) {
+					if (e.animationName === 'hinge') {
+						logo.removeEventListener('animationend', handler);
+
+						setTimeout(() => {
+							logo.classList.remove('animate-hinge');
+							logo.style.transform = 'none';
+							logo.style.opacity = '1';
+
+							requestAnimationFrame(() => {
+								void logo.offsetWidth;
+								logo.classList.add('animate-rubber-band');
+							});
+						}, 1000);
+					}
+				});
+			}, 2000);
+		};
+
+		const onLeave = () => {
+			clearTimeout(timeout);
+		};
+
+		logo.addEventListener('mouseenter', onEnter);
+		logo.addEventListener('mouseleave', onLeave);
+	}
+</script>

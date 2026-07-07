@@ -1,0 +1,156 @@
+import { useEffect, useRef } from "react";
+import {
+	AmbientLight,
+	DoubleSide,
+	Mesh,
+	MeshStandardMaterial,
+	NoToneMapping,
+	PerspectiveCamera,
+	PointLight,
+	Scene,
+	WebGLRenderer,
+} from "three";
+import { AsciiEffect } from "three/examples/jsm/effects/AsciiEffect.js";
+import { STLLoader } from "three/examples/jsm/loaders/STLLoader.js";
+
+interface AsciiRendererProps {
+	resolution: number;
+}
+
+function initAsciiRenderer(container: HTMLElement, resolution: number) {
+	const width = container.clientWidth;
+	const height = container.clientHeight;
+
+	// Scene
+	const scene = new Scene();
+
+	// Camera
+	const camera = new PerspectiveCamera(45, width / height, 0.1, 1000);
+	camera.position.set(0, 20, 0);
+	camera.lookAt(0, 0, 0);
+
+	// Renderer
+	const renderer = new WebGLRenderer();
+	renderer.toneMapping = NoToneMapping;
+	renderer.setSize(width, height);
+
+	// ASCII Effect
+	const effect = new AsciiEffect(renderer, "#@%=*+-:. ", {
+		resolution,
+	});
+	effect.setSize(width, height);
+	effect.domElement.style.color = "var(--foreground)";
+	effect.domElement.style.backgroundColor = "transparent";
+	container.appendChild(effect.domElement);
+
+	// Lights
+	const ambientLight = new AmbientLight(0xffffff, 0.15);
+	scene.add(ambientLight);
+
+	const pointLight1 = new PointLight(0xffffff, 1);
+	pointLight1.position.set(-200, 100, 200);
+	scene.add(pointLight1);
+
+	const pointLight2 = new PointLight(0xffffff, 1);
+	pointLight2.position.set(300, 100, -200);
+	scene.add(pointLight2);
+
+	// Material
+	const material = new MeshStandardMaterial({
+		flatShading: true,
+		side: DoubleSide,
+		color: 0xcccccc,
+		roughness: 1,
+		metalness: 0.7,
+	});
+
+	// Load model
+	let mesh: Mesh | null = null;
+	const loader = new STLLoader();
+	loader.load("/models/plant.stl", (geometry) => {
+		mesh = new Mesh(geometry, material);
+		mesh.scale.setScalar(0.013);
+		mesh.rotation.set(-Math.PI / 2 - 1.6, 0, 0);
+		mesh.position.set(2, 0, 1);
+		scene.add(mesh);
+	});
+
+	// Animation loop
+	let animationId: number;
+	let lastTime = 0;
+	const prefersReducedMotion = window.matchMedia(
+		"(prefers-reduced-motion: reduce)",
+	).matches;
+
+	function animate(time: number) {
+		animationId = requestAnimationFrame(animate);
+		const delta = (time - lastTime) / 1000;
+		lastTime = time;
+
+		if (mesh && !prefersReducedMotion) {
+			mesh.rotation.z -= delta / 5;
+		}
+
+		effect.render(scene, camera);
+	}
+	animate(0);
+
+	// Resize handler
+	const handleResize = () => {
+		const w = container.clientWidth;
+		const h = container.clientHeight;
+		camera.aspect = w / h;
+		camera.updateProjectionMatrix();
+		renderer.setSize(w, h);
+		effect.setSize(w, h);
+	};
+	window.addEventListener("resize", handleResize);
+
+	return () => {
+		cancelAnimationFrame(animationId);
+		window.removeEventListener("resize", handleResize);
+		container.removeChild(effect.domElement);
+		renderer.dispose();
+		material.dispose();
+		if (mesh) mesh.geometry.dispose();
+	};
+}
+
+export default function AsciiRenderer({ resolution }: AsciiRendererProps) {
+	const containerRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		const container = containerRef.current;
+		if (!container) return;
+
+		let cleanup: (() => void) | undefined;
+
+		// Lazy-init the WebGL scene only once the container scrolls into view.
+		const observer = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) {
+					if (entry.isIntersecting) {
+						observer.unobserve(entry.target);
+						cleanup = initAsciiRenderer(container, resolution);
+					}
+				}
+			},
+			{ rootMargin: "50px", threshold: 0 },
+		);
+		observer.observe(container);
+
+		return () => {
+			observer.disconnect();
+			cleanup?.();
+		};
+	}, [resolution]);
+
+	return (
+		<div
+			ref={containerRef}
+			// AsciiEffect sets an inline font-family; the important modifier is
+			// required to win over it (upstream this was a three.js patch).
+			className="ascii-renderer w-full h-full [&_*]:font-mono!"
+		/>
+	);
+}

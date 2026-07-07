@@ -1,25 +1,65 @@
 ---
 import '../styles/global.css';
 
+import { ALIAS, DESCRIPTION, EMAIL_ADDRESS, FULL_NAME, JSONLD, SITE, TITLE } from '../lib/consts';
+
 interface Props {
-	title: string;
+	title?: string;
 	description?: string;
 }
 
-const { title, description = 'Personal website of Igor Moreira Castro' } = Astro.props;
+const { title = `${FULL_NAME} - ${TITLE}`, description = DESCRIPTION } = Astro.props;
 ---
 
-<html lang="en">
+<html lang="en" class="lg:[scrollbar-gutter:stable]">
 	<head>
 		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<meta name="description" content={description} />
 		<title>{title}</title>
+		<meta name="description" content={description} />
+		<meta name="author" content={`${FULL_NAME}, ${EMAIL_ADDRESS}`} />
+		<meta
+			name="keywords"
+			content="igor, moreira, castro, igor moreira, igor castro, igor moreira castro, igordro1d, fullstack web, fullstack developer, fullstack, developer, software, software engineer"
+		/>
+		<meta
+			name="robots"
+			content="follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large"
+		/>
+		<meta name="theme-color" content="#ffffff" />
+		<link rel="manifest" href="/manifest.json" />
+		<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="shortcut icon" href="/favicon.ico" />
+		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+		<meta name="apple-mobile-web-app-title" content={ALIAS} />
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:site_name" content={FULL_NAME} />
+		<meta property="og:locale" content="en-US" />
+		<meta property="og:image" content={`${SITE}/opengraph.png`} />
+		<meta property="og:image:alt" content={`Cover image, with the text: ${FULL_NAME}. ${TITLE}.`} />
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={`${SITE}/twitter.png`} />
+		<link
+			rel="stylesheet"
+			href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap"
+		/>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			rel="stylesheet"
+			href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Geist+Mono:wght@400;500;600;700&display=swap"
+		/>
+		<script type="application/ld+json" set:html={JSON.stringify(JSONLD)} />
 	</head>
-	<body>
+	<body
+		class="flex flex-col h-dvh w-full px-2.5 bg-background text-foreground font-sans antialiased selection:bg-black/20 [scrollbar-width:thin]"
+	>
 		<slot />
 	</body>
 </html>

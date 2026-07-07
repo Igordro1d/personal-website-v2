@@ -1,0 +1,77 @@
+---
+import { getCollection } from 'astro:content';
+
+import NavBar from '../../components/NavBar.astro';
+import SiteLink from '../../components/SiteLink.astro';
+import Layout from '../../layouts/Layout.astro';
+import { formatDate, isDraft, parseDateFromId, slicePreview } from '../../lib/blog';
+import { FULL_NAME } from '../../lib/consts';
+
+const [latest, ...entries] = (await getCollection('blog'))
+	.map((entry) => ({
+		id: entry.id,
+		url: `/blog/${entry.id}`,
+		title: entry.data.title,
+		preview: slicePreview(entry.data.description || '', 185),
+		date: parseDateFromId(entry.id),
+		isDraft: isDraft(entry.id),
+	}))
+	.sort((a, b) => b.date.getTime() - a.date.getTime());
+---
+
+<Layout title={`Blog | ${FULL_NAME}`}>
+	<div
+		class="flex flex-col items-center justify-start max-w-397 h-full w-full mt-4 md:mt-8 px-2 md:px-4 mx-auto lg:[scrollbar-gutter:stable]"
+	>
+		<NavBar />
+		{
+			latest && (
+				<div class="flex flex-col items-center justify-start w-full h-full mt-4 md:mt-11">
+					<article class="flex flex-col items-start justify-start w-full gap-4 md:gap-7">
+						<a href={latest.url} class="w-full h-37.5 md:h-124.25 overflow-clip">
+							<div class="relative w-full h-37.5 scale-[200%] md:scale-100 md:w-full md:h-124.25">
+								<img
+									src={`/blog/${latest.id}/cover.png`}
+									class:list={[
+										'absolute inset-0 w-full h-full object-cover',
+										latest.isDraft && 'opacity-50',
+									]}
+									decoding="async"
+									loading="lazy"
+									alt=""
+								/>
+							</div>
+						</a>
+						<div class="flex flex-col items-start justify-start w-full md:gap-2">
+							<h2
+								class:list={['font-serif text-3xl md:text-5xl', latest.isDraft && 'opacity-50']}
+							>
+								Latest: {latest.title}
+							</h2>
+							<p class:list={['w-full text-lg md:text-2xl', latest.isDraft && 'opacity-50']}>
+								{latest.preview} <SiteLink href={latest.url}>read more</SiteLink>.
+							</p>
+						</div>
+					</article>
+					<div class="flex flex-col items-start justify-start gap-2 md:gap-6 w-full mt-24 md:mt-14">
+						{entries.map(({ title, date, url, isDraft: draft }) => (
+							<a href={url} class="w-full">
+								<div
+									class:list={[
+										'flex flex-row items-start justify-between w-full',
+										draft && 'opacity-50',
+									]}
+								>
+									<h2 class="font-serif text-3xl md:text-5xl">{title}</h2>
+									<time class="font-serif text-3xl md:text-5xl" datetime={date.toISOString()}>
+										{formatDate(date)}
+									</time>
+								</div>
+							</a>
+						))}
+					</div>
+				</div>
+			)
+		}
+	</div>
+</Layout>

@@ -1,0 +1,59 @@
+---
+import { getCollection, render } from 'astro:content';
+
+import NavBar from '../../../components/NavBar.astro';
+import Layout from '../../../layouts/Layout.astro';
+import { formatDate, parseDateFromId } from '../../../lib/blog';
+import { FULL_NAME } from '../../../lib/consts';
+
+export async function getStaticPaths() {
+	const entries = await getCollection('blog');
+	return entries.map((entry) => ({ params: { id: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const date = parseDateFromId(entry.id);
+---
+
+<Layout title={`${entry.data.title} | ${FULL_NAME}`} description={entry.data.description}>
+	<div
+		class="flex flex-col items-center justify-start max-w-397 h-full w-full mt-4 md:mt-8 px-2 md:px-4 mx-auto lg:[scrollbar-gutter:stable]"
+	>
+		<NavBar />
+		<article class="flex flex-col items-center justify-start w-full h-full mt-4 md:mt-11">
+			<div class="flex flex-col items-start justify-start w-full gap-7">
+				<a href={`/blog/${entry.id}`} class="w-full h-[150px] md:h-[497px] overflow-clip">
+					<div class="relative w-full h-[150px] scale-[200%] md:scale-100 md:w-full md:h-[497px]">
+						<img
+							src={`/blog/${entry.id}/cover.png`}
+							class="absolute inset-0 w-full h-full object-cover"
+							decoding="async"
+							loading="lazy"
+							alt=""
+						/>
+					</div>
+				</a>
+				<div class="flex flex-col items-start justify-start w-full max-w-[1200px] mx-auto gap-4 md:gap-0">
+					<div class="flex flex-col md:flex-row items-start justify-between w-full gap-1 md:gap-0">
+						<h2 class="font-serif text-3xl md:text-5xl">{entry.data.title}</h2>
+						<div class="flex flex-row md:flex-col items-center md:items-end justify-start gap-2 md:gap-0">
+							<time class="font-serif text-xl md:text-4xl" datetime={date.toISOString()}>
+								{formatDate(date)}
+							</time>
+						</div>
+					</div>
+					<div class="flex flex-row items-center justify-start gap-2 md:gap-6">
+						<p class="text-sans text-lg md:text-3xl">{FULL_NAME}</p>
+					</div>
+				</div>
+			</div>
+			<div
+				class="flex flex-col items-start justify-start prose-sm lg:prose prose-zinc text-lg lg:text-xl w-full md:max-w-[1200px] gap-5 mt-14"
+			>
+				<Content />
+				<div class="pb-16"></div>
+			</div>
+		</article>
+	</div>
+</Layout>
