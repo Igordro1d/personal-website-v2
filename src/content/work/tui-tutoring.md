@@ -1,5 +1,5 @@
 ---
-index: 4
+index: 3
 company: Tui Tutoring
 title: Founder
 team: null
