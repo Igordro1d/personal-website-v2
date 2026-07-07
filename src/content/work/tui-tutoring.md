@@ -1,11 +1,11 @@
 ---
-index: 2
-company: Placeholder Company
-title: Software Engineer
+index: 4
+company: Tui Tutoring
+title: Founder
 team: null
 vertical: null
-employment: full-time
-start: January 2026
+employment: self-employed
+start: December 2025
 end: null
 current: true
 location: Auckland, NZ

@@ -1,13 +1,13 @@
 ---
-index: 1
-company: Placeholder Projects
-title: Software Engineer
+index: 3
+company: Education Perfect
+title: Software Engineering Intern
 team: null
 vertical: null
-employment: self-employed
-start: January 2025
-end: null
-current: true
+employment: internship
+start: November 2025
+end: February 2026
+current: false
 location: Auckland, NZ
 locationType: remote
 description: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Duis aute irure dolor in reprehenderit in voluptate.
